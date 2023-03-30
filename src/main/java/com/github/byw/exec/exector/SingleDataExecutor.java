@@ -1,6 +1,5 @@
 package com.github.byw.exec.exector;
 
-import com.github.byw.exception.CalculateException;
 import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.formula.Formula;
 import com.github.byw.formula.FormulaConditions;
@@ -35,7 +34,7 @@ public class SingleDataExecutor extends AbstractDataExecutor {
 
 		FormulaConditions formulaConditions = formulaInstance.getConditions();
 		if (formulaConditions == null) {
-			doExec(formulaInstance);
+			doExec(formulaInstance, config);
 			return;
 		}
 		//停止条件
@@ -45,16 +44,16 @@ public class SingleDataExecutor extends AbstractDataExecutor {
 
 		Boolean stopConditionsResult = executeForBool(stopConditions, param);
 		if (startConditionsResult) {
-			doExec(formulaInstance);
+			doExec(formulaInstance, config);
 			while (!stopConditionsResult && !Thread.currentThread().isInterrupted()) {
-				doExec(formulaInstance);
+				doExec(formulaInstance, config);
 				stopConditionsResult = executeForBool(stopConditions, param);
 			}
 		}
 	}
 
 	@SneakyThrows
-	private void doExec(Formula formulaInstance) {
+	private void doExec(Formula formulaInstance, CalculateConfig config) {
 		Integer getInteger = null;
 		List<String> toBeExecutedFormulaList = formulaInstance.getFormulaList();
 		FormulaConditions conditions = formulaInstance.getConditions();
@@ -69,6 +68,9 @@ public class SingleDataExecutor extends AbstractDataExecutor {
 				stopCondition = conditions.getStopConditions() == null ? "" : String.valueOf(conditions.getStopConditions());
 			}
 			printLog(toBeExecutedFormula, startCondition, stopCondition);
+			if (config.getRetainDecimal() != null) {
+				toBeExecutedFormula = modificationFormula(toBeExecutedFormula, config.getRetainDecimal());
+			}
 			if (getInteger != null) {
 				toBeExecutedFormula = modificationFormula(toBeExecutedFormula, getInteger);
 			}

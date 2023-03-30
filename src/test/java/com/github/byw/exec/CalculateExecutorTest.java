@@ -1,6 +1,7 @@
 package com.github.byw.exec;
 
 import com.github.byw.exception.CalculateException;
+import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.formula.FormulaConditions;
 import com.github.byw.formula.FormulaManager;
 import com.github.byw.param.Param;
@@ -172,6 +173,11 @@ class CalculateExecutorTest {
 		});
 		BigDecimal 结果 = CalculateExecutor.exec(instance, formulaManager).getNumResult("结果");
 		assertEquals(BigDecimal.valueOf(4.142), 结果);
+		// 通过配置设置
+		CalculateConfig config = new CalculateConfig();
+		config.setRetainDecimal(1);
+		BigDecimal 结果1 = CalculateExecutor.exec(instance, formulaManager, config).getNumResult("结果");
+		assertEquals(BigDecimal.valueOf(4.1), 结果1);
 
 		//多值计算
 		Param param_many = Param.getInstance();
@@ -187,6 +193,13 @@ class CalculateExecutorTest {
 		boolean equalCollection = CollectionUtils.isEqualCollection(Lists.newArrayList(BigDecimal.valueOf(169.6), BigDecimal.valueOf(170.6),
 				BigDecimal.valueOf(171.6)), 结果数组);
 		assertTrue(equalCollection);
+		// 通过配置设置
+		CalculateConfig config2 = new CalculateConfig();
+		config2.setRetainDecimal(0);
+		List<BigDecimal> 结果数组2 = CalculateExecutor.exec(param_many, formula_many, config2).getNumResultList("结果");
+		boolean equalCollection2 = CollectionUtils.isEqualCollection(Lists.newArrayList(BigDecimal.valueOf(170.0), BigDecimal.valueOf(171.0),
+				BigDecimal.valueOf(172.0)), 结果数组2);
+		assertTrue(equalCollection2);
 	}
 
 	@Test
@@ -222,21 +235,5 @@ class CalculateExecutorTest {
 			});
 			CalculateExecutor.exec(param_many, formula_many);
 		});
-/*
-
-
-		assertThrows(CalculateException.class, () -> {
-			Param param_many = Param.getInstance();
-			param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
-			FormulaManager formula_many = FormulaManager.getInstance();
-			formula_many.add("结果 = 小明最近三年身高 + 1", new FormulaConditions() {
-				@Override
-				public Integer retainDecimal() {
-					return 1;
-				}
-			});
-			CalculateExecutor.exec(param_many, formula_many);
-		});
-*/
 	}
 }

@@ -107,9 +107,9 @@ public class ListDataExecutor extends AbstractDataExecutor {
 
 			ConditionResultBean stopConditionsResult = judgeWhetherStartOrStop(stopConditionMessage, i);
 			if (startConditionsResult.result) {
-				executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula);
+				executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula, config);
 				while (!stopConditionsResult.result && !Thread.currentThread().isInterrupted()) {
-					executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula);
+					executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula, config);
 					stopConditionsResult = judgeWhetherStartOrStop(stopConditionMessage, i);
 				}
 			}
@@ -120,11 +120,14 @@ public class ListDataExecutor extends AbstractDataExecutor {
 		}
 	}
 
-	private void executiveFormula(List<FormulaMessage> formulaMessages, Integer integer, int i, String startCondition, String stopCondition) {
+	private void executiveFormula(List<FormulaMessage> formulaMessages, Integer integer, int i, String startCondition, String stopCondition, CalculateConfig config) {
 		for (FormulaMessage formulaMessage : formulaMessages) {
 
 			execute(formulaMessage, i, oldFormula -> {
 				printLog(oldFormula, startCondition, stopCondition);
+				if (config.getRetainDecimal() != null) {
+					return modificationFormula(oldFormula, config.getRetainDecimal());
+				}
 				if (integer != null) {
 					return modificationFormula(oldFormula, integer);
 				}
