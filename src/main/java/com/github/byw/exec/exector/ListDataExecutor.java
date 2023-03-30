@@ -12,6 +12,7 @@ import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -107,6 +108,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 
 			ConditionResultBean stopConditionsResult = judgeWhetherStartOrStop(stopConditionMessage, i);
 			if (startConditionsResult.result) {
+				initResultList(formulaMessages, size);
 				executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula, config);
 				while (!stopConditionsResult.result && !Thread.currentThread().isInterrupted()) {
 					executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula, config);
@@ -119,6 +121,24 @@ public class ListDataExecutor extends AbstractDataExecutor {
 			}
 		}
 	}
+	/**
+	 * 初始化结果列表
+	 * <p>
+	 * 之所以初始化时因为避免列表类公式的结果错位和缺失，例如当前结果列表的长度应该为3，但是在计算第二个结果的时候因为没有满足运算条件所以没有输出结果，但是第三个结果成功输出了，
+	 * 这就导致结果列表的长度变成了2，同时第二个结果应该是第三个结果(因为中间有个公式没有满足执行条件，没有执行)。
+	 *
+	 * @param formulaMessages 公式信息
+	 * @param size            参数长度
+	 */
+	private void initResultList(List<FormulaMessage> formulaMessages, int size) {
+		formulaMessages.forEach(formulaMessage -> {
+			if (param.getParamContext().get(formulaMessage.getOriginalResultName()) == null) {
+				LOGGER.info("初始化" + formulaMessage.getOriginalResultName());
+				param.addArray(formulaMessage.getOriginalResultName(), new ArrayList<>(Collections.nCopies(size, BigDecimal.ZERO)));
+			}
+		});
+	}
+
 
 	private void executiveFormula(List<FormulaMessage> formulaMessages, Integer integer, int i, String startCondition, String stopCondition, CalculateConfig config) {
 		for (FormulaMessage formulaMessage : formulaMessages) {
@@ -381,7 +401,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 			return null;
 		}
 		if (condition) {
-			formula = "条件公式_" + Thread.currentThread().getId() + indexMark + " = " + formula;
+			formula = "条件公式_" + Thread.currentThread().getId() + indexMark + " = " + formula + " ";
 		}
 		FormulaMessage formulaMessage = new FormulaMessage(formula);
 		checkResultName(formula);
@@ -517,6 +537,10 @@ public class ListDataExecutor extends AbstractDataExecutor {
 
 		public FormulaMessage(String originalFormula) {
 			this.originalFormula = originalFormula;
+		}
+
+		public String getOriginalResultName() {
+			return parameterOriginalNameList.get(0);
 		}
 	}
 }
