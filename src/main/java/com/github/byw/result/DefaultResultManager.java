@@ -41,9 +41,12 @@ public class DefaultResultManager implements ResultManager {
 		}
 		List resultList = (List) result;
 
-		if (!(resultList.get(0) instanceof BigDecimal)) {
-			resultList = (List) resultList.stream().map(t -> new BigDecimal(t.toString())).collect(Collectors.toList());
-		}
+		resultList = (List) resultList.stream().map(t -> {
+			if (!(t instanceof BigDecimal)) {
+				return new BigDecimal(t.toString());
+			}
+			return t;
+		}).collect(Collectors.toList());
 		return (List<BigDecimal>) resultList;
 	}
 
