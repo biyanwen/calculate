@@ -34,6 +34,9 @@ class CalculateExecutorTest {
 		ResultManager resultManager = CalculateExecutor.exec(param, formulaManager);
 		BigDecimal avgGrade = resultManager.getNumResult("小明的平均成绩");
 		BigDecimal avgDouble = resultManager.getNumResult("小明平均成绩的2倍");
+
+		BigDecimal 小明平均成绩的2倍 = CalculateExecutor.getResultManager(param).getNumResult("小明平均成绩的2倍");
+		assertEquals(avgDouble, 小明平均成绩的2倍);
 		assertEquals(new BigDecimal("73.3333333333"), avgGrade);
 		assertEquals(new BigDecimal("146.6666666666"), avgDouble);
 
@@ -223,11 +226,11 @@ class CalculateExecutorTest {
 			});
 			CalculateExecutor.exec(param_many, formula_many);
 		});
-		//多值计算公式 参数缺失
+		// 多值计算无法获取参数长度
 		assertThrows(CalculateException.class, () -> {
 			Param param_many = Param.getInstance();
 			FormulaManager formula_many = FormulaManager.getInstance();
-			formula_many.add("结果 = 小明最近三年身高_index + 1", new FormulaConditions() {
+			formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
 				@Override
 				public Integer retainDecimal() {
 					return 1;
