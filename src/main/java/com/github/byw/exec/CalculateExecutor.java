@@ -15,6 +15,7 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 计算执行者
@@ -36,6 +37,9 @@ public class CalculateExecutor {
 		IExpressContext<String, Object> paramContext = param.getParamContext();
 		for (Formula formulaInstance : formulaManager.getFormulaList()) {
 			Executor executor = ExecutorManage.getInstance().get(formulaInstance);
+			if (config.getFunctionConfig() != null) {
+				config.getFunctionConfig().getOperatorMap().forEach(executor::registerFunction);
+			}
 			executor.exec(formulaInstance, param, config);
 		}
 		return new DefaultResultManager(paramContext);

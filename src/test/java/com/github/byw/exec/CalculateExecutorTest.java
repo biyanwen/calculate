@@ -2,11 +2,13 @@ package com.github.byw.exec;
 
 import com.github.byw.exception.CalculateException;
 import com.github.byw.exec.config.CalculateConfig;
+import com.github.byw.exec.config.FunctionConfig;
 import com.github.byw.formula.FormulaConditions;
 import com.github.byw.formula.FormulaManager;
 import com.github.byw.param.Param;
 import com.github.byw.result.ResultManager;
 import com.google.common.collect.Lists;
+import com.ql.util.express.Operator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
 
@@ -238,5 +240,33 @@ class CalculateExecutorTest {
 			});
 			CalculateExecutor.exec(param_many, formula_many);
 		});
+	}
+
+	@Test
+	public void register_function() {
+		CalculateConfig calculateConfig = new CalculateConfig();
+		calculateConfig.setFunctionConfig(new FunctionConfig().addFunction("testFunction", new TestFunction()));
+
+		Param instance = Param.getInstance();
+		instance.addNumber("圆周率", 3.14159);
+		FormulaManager formulaManager = FormulaManager.getInstance();
+		formulaManager.add("结果 = testFunction(圆周率) + 1");
+		BigDecimal 结果 = CalculateExecutor.exec(instance, formulaManager, calculateConfig).getNumResult("结果");
+		assertEquals(BigDecimal.valueOf(10087), 结果);
+	}
+
+	/**
+	 * 测试函数
+	 * 无论传入什么参数都返回 10086
+	 *
+	 * @author byw
+	 * @date 2023/04/03
+	 */
+	public static class TestFunction extends Operator {
+
+		@Override
+		public Object executeInner(Object[] list) throws Exception {
+			return BigDecimal.valueOf(10086);
+		}
 	}
 }

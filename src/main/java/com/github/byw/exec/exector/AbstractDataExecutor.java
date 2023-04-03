@@ -3,6 +3,7 @@ package com.github.byw.exec.exector;
 import com.github.byw.exec.operator.*;
 import com.github.byw.param.Param;
 import com.ql.util.express.ExpressRunner;
+import com.ql.util.express.Operator;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -18,16 +19,21 @@ public abstract class AbstractDataExecutor implements Executor {
 
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractDataExecutor.class);
 
-	private final static ExpressRunner RUNNER = new ExpressRunner(true, false);
+	private final ExpressRunner RUNNER = new ExpressRunner(true, false);
 
 	protected static final char EQUAL = '=';
 
-	static {
+	{
 		RUNNER.addFunction("listMax", new ListMax());
 		RUNNER.addFunction("listMin", new ListMin());
 		RUNNER.addFunction("listSum", new ListSum());
 		RUNNER.addFunction("defaultZero", new DefaultZero());
 		RUNNER.addFunction("default", new Default());
+	}
+
+	@Override
+	public void registerFunction(String name, Operator operator) {
+		RUNNER.addFunction(name, operator);
 	}
 
 	/**
@@ -58,8 +64,8 @@ public abstract class AbstractDataExecutor implements Executor {
 	 * 修改公式
 	 * 主要是处理用户自定义的四舍五入
 	 *
-	 * @param toBeExecutedFormula 要的执行公式
-	 * @param integer
+	 * @param toBeExecutedFormula 执行的公式
+	 * @param integer 保留几位小数
 	 * @return {@link String}
 	 */
 	protected String modificationFormula(String toBeExecutedFormula, Integer integer) {

@@ -38,6 +38,11 @@ public class CalculateConfig {
 	 */
 	private Integer currentIndex;
 
+	/**
+	 * 注册自定义函数
+	 */
+	private FunctionConfig functionConfig;
+
 	public CalculateConfig() {
 	}
 }
