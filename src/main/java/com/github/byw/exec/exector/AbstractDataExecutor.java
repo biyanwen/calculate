@@ -3,8 +3,8 @@ package com.github.byw.exec.exector;
 import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.exec.operator.*;
 import com.github.byw.formula.Formula;
-import com.github.byw.log.LogOperator;
-import com.github.byw.param.Param;
+import com.github.byw.param.ParamContext;
+import com.github.byw.param.ParamContext;
 import com.ql.util.express.ExpressRunner;
 import com.ql.util.express.Operator;
 import lombok.SneakyThrows;
@@ -26,7 +26,7 @@ public abstract class AbstractDataExecutor implements Executor {
 
 	protected static final char EQUAL = '=';
 
-	protected Param param;
+	protected ParamContext param;
 
 	protected CalculateConfig config;
 
@@ -39,7 +39,7 @@ public abstract class AbstractDataExecutor implements Executor {
 	}
 
 	@Override
-	public void exec(Formula formulaInstance, Param param, CalculateConfig config) {
+	public void exec(Formula formulaInstance, ParamContext param, CalculateConfig config) {
 		this.param = param;
 		this.config = config;
 		doExec(formulaInstance);
@@ -65,7 +65,7 @@ public abstract class AbstractDataExecutor implements Executor {
 	 * @return {@link Boolean}
 	 */
 	@SneakyThrows
-	protected Boolean executeForBool(String formula, Param param) {
+	protected Boolean executeForBool(String formula, ParamContext param) {
 		return (Boolean) RUNNER.execute(formula, param.getParamContext(), null, true, false);
 	}
 
@@ -76,7 +76,7 @@ public abstract class AbstractDataExecutor implements Executor {
 	 * @param param   参数
 	 */
 	@SneakyThrows
-	protected void execute(String formula, Param param) {
+	protected void execute(String formula, ParamContext param) {
 		RUNNER.execute(formula, param.getParamContext(), null, true, false);
 	}
 

@@ -3,7 +3,7 @@ package com.github.byw.exec.exector;
 
 import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.formula.Formula;
-import com.github.byw.param.Param;
+import com.github.byw.param.ParamContext;
 import com.ql.util.express.Operator;
 
 /**
@@ -30,7 +30,7 @@ public interface Executor {
 	 * @param param           参数
 	 * @param config          配置
 	 */
-	void exec(Formula formulaInstance, Param param, CalculateConfig config);
+	void exec(Formula formulaInstance, ParamContext param, CalculateConfig config);
 
 
 	/**

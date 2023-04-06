@@ -4,6 +4,8 @@ import com.github.byw.formula.DefaultFormulaManager;
 import com.github.byw.formula.FormulaManager;
 import com.github.byw.log.LogOperator;
 import com.github.byw.log.PrintLogOperator;
+import com.github.byw.param.DefaultParam;
+import com.github.byw.param.ParamContext;
 import lombok.Data;
 
 /**
@@ -57,6 +59,11 @@ public class CalculateConfig {
 	 */
 	private Class<?> formulaManagerClass = DefaultFormulaManager.class;
 
+	/**
+	 * 参数上下文
+	 */
+	private Class<?> paramContextClass = DefaultParam.class;
+
 	public CalculateConfig() {
 	}
 
@@ -88,6 +95,11 @@ public class CalculateConfig {
 
 	public <T extends FormulaManager> CalculateConfig setFormulaManagerClass(Class<T> tClass) {
 		this.formulaManagerClass = tClass;
+		return this;
+	}
+
+	public <T extends ParamContext> CalculateConfig setParamContextClass(Class<T> paramContextClass) {
+		this.paramContextClass = paramContextClass;
 		return this;
 	}
 }

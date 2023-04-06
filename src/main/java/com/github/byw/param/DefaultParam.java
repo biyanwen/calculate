@@ -7,8 +7,6 @@ import com.github.byw.log.LogOperator;
 import com.google.common.collect.Lists;
 import com.ql.util.express.DefaultContext;
 import com.ql.util.express.IExpressContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +19,7 @@ import java.util.Map;
  * @author byw
  * @date 2022/11/23
  */
-public class Param {
+public class DefaultParam implements ParamContext {
 	/**
 	 * 参数上下文
 	 * key：参数名称 value：参数值
@@ -36,17 +34,9 @@ public class Param {
 
 	private LogOperator logOperator;
 
-	private Param() {
-	}
-
-	public static Param getInstance() {
-		return new Param();
-	}
-
-	public static Param getInstance(CalculateConfig config) {
-		Param param = new Param();
-		param.logOperator = config.getLogOperator();
-		return param;
+	@Override
+	public void setCalculateConfig(CalculateConfig config) {
+		this.logOperator = config.getLogOperator();
 	}
 
 	/**
@@ -54,9 +44,10 @@ public class Param {
 	 *
 	 * @param paramName 参数名称
 	 * @param number    数值
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <T extends Number> Param addNumber(String paramName, T number) {
+	@Override
+	public <T extends Number> DefaultParam addNumber(String paramName, T number) {
 		add(paramName, number, false);
 		return this;
 	}
@@ -67,9 +58,10 @@ public class Param {
 	 * @param template 模板
 	 * @param arg      参数值
 	 * @param number   数量
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <T extends Number> Param addNumber(String template, String arg, T number) {
+	@Override
+	public <T extends Number> DefaultParam addNumber(String template, String arg, T number) {
 		return this.addNumber(template, Lists.newArrayList(arg), number);
 	}
 
@@ -79,9 +71,10 @@ public class Param {
 	 * @param template 模板
 	 * @param args     参数值
 	 * @param number   数量
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <T extends Number> Param addNumber(String template, List<String> args, T number) {
+	@Override
+	public <T extends Number> DefaultParam addNumber(String template, List<String> args, T number) {
 		String format = StringFormatter.format(template, args.toArray(new String[0]));
 		this.add(format, number, false);
 		return this;
@@ -92,9 +85,10 @@ public class Param {
 	 *
 	 * @param paramName 参数名称
 	 * @param array     数组
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <R extends Number, T extends List<R>> Param addArray(String paramName, T array) {
+	@Override
+	public <R extends Number, T extends List<R>> DefaultParam addArray(String paramName, T array) {
 		add(paramName, array, true);
 		return this;
 	}
@@ -105,9 +99,10 @@ public class Param {
 	 * @param array    数组
 	 * @param arg      参数
 	 * @param template 模板
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <R extends Number, T extends List<List<R>>> Param addArrayArray(String template, String arg, T array) {
+	@Override
+	public <R extends Number, T extends List<List<R>>> DefaultParam addArrayArray(String template, String arg, T array) {
 		String paramName = StringFormatter.format(template, arg);
 		add(paramName, array, true);
 		return this;
@@ -120,9 +115,10 @@ public class Param {
 	 * @param template 模板
 	 * @param arg      模板所需参数
 	 * @param array    数组
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <R extends Number, T extends Collection<R>> Param addArray(String template, String arg, T array) {
+	@Override
+	public <R extends Number, T extends Collection<R>> DefaultParam addArray(String template, String arg, T array) {
 		return this.addArray(template, Lists.newArrayList(arg), array);
 	}
 
@@ -132,9 +128,10 @@ public class Param {
 	 * @param template 模板
 	 * @param args     模板所需参数
 	 * @param array    数组
-	 * @return {@link Param}
+	 * @return {@link DefaultParam}
 	 */
-	public <R extends Number, T extends Collection<R>> Param addArray(String template, List<String> args, T array) {
+	@Override
+	public <R extends Number, T extends Collection<R>> DefaultParam addArray(String template, List<String> args, T array) {
 		String format = StringFormatter.format(template, args.toArray(new String[0]));
 		add(format, array, true);
 		return this;
@@ -146,6 +143,7 @@ public class Param {
 	 *
 	 * @return {@link IExpressContext}<{@link String}, {@link Object}>
 	 */
+	@Override
 	public IExpressContext<String, Object> getParamContext() {
 		return paramContext;
 	}
@@ -156,7 +154,8 @@ public class Param {
 	 * @param paramName 参数名称
 	 * @return {@link ParamConfig}
 	 */
-	public ParamConfig getConfig(String paramName) {
+	@Override
+	public ParamConfig getParamConfig(String paramName) {
 		return configContext.get(paramName);
 	}
 

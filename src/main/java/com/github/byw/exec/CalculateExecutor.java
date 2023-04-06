@@ -6,9 +6,9 @@ import com.github.byw.exec.exector.Executor;
 import com.github.byw.exec.exector.ListDataExecutor;
 import com.github.byw.exec.exector.SingleDataExecutor;
 import com.github.byw.formula.Formula;
-import com.github.byw.formula.DefaultFormulaManager;
 import com.github.byw.formula.FormulaManager;
-import com.github.byw.param.Param;
+import com.github.byw.param.DefaultParam;
+import com.github.byw.param.ParamContext;
 import com.github.byw.result.DefaultResultManager;
 import com.github.byw.result.ResultManager;
 import com.ql.util.express.IExpressContext;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class CalculateExecutor {
 
-	public static ResultManager getResultManager(Param param) {
+	public static ResultManager getResultManager(ParamContext param) {
 		return new DefaultResultManager(param.getParamContext());
 	}
 
@@ -39,14 +39,14 @@ public class CalculateExecutor {
 		return new CalculateExecutor(config);
 	}
 
-	public ResultManager exec(Param param, FormulaManager formulaManager) {
+	public ResultManager exec(ParamContext param, FormulaManager formulaManager) {
 		return CalculateExecutorBean.exec(param, formulaManager, config);
 	}
 
 	private static class CalculateExecutorBean {
 
 		@SneakyThrows
-		public static ResultManager exec(Param param, FormulaManager formulaManager, CalculateConfig... configs) {
+		public static ResultManager exec(ParamContext param, FormulaManager formulaManager, CalculateConfig... configs) {
 			if (param == null) {
 				throw new CalculateException("param 参数不能为 null ");
 			}

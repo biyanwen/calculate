@@ -4,7 +4,6 @@ import com.github.byw.exception.CalculateException;
 import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.formula.Formula;
 import com.github.byw.formula.FormulaConditions;
-import com.github.byw.param.Param;
 import com.github.byw.param.ParamConfig;
 import com.google.common.collect.Lists;
 import com.ql.util.express.IExpressContext;
@@ -200,7 +199,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 		for (int i = 0; i < parameterOriginalNameList.size(); i++) {
 			String nameToBeReplaced = nameToBeReplacedList.get(i);
 			String parameterOriginalName = parameterOriginalNameList.get(i);
-			ParamConfig config = param.getConfig(parameterOriginalName);
+			ParamConfig config = param.getParamConfig(parameterOriginalName);
 			// 第一个是结果参数名称，不用校验。如果是空检查语句也不用校验
 			if (i > 0 && !isNullJudge) {
 				if (config == null) {
@@ -354,7 +353,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 		// 第一个是结果名称不用检查
 		for (int i = 1; i < parameterOriginalNameList.size(); i++) {
 			String name = parameterOriginalNameList.get(i);
-			ParamConfig config = param.getConfig(name);
+			ParamConfig config = param.getParamConfig(name);
 			if (config == null) {
 				continue;
 			}

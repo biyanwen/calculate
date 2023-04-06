@@ -2,9 +2,9 @@ package com.github.byw.factory;
 
 import com.github.byw.exec.CalculateExecutor;
 import com.github.byw.exec.config.CalculateConfig;
-import com.github.byw.formula.DefaultFormulaManager;
 import com.github.byw.formula.FormulaManager;
-import com.github.byw.param.Param;
+import com.github.byw.param.DefaultParam;
+import com.github.byw.param.ParamContext;
 import lombok.Data;
 import lombok.SneakyThrows;
 
@@ -46,10 +46,13 @@ public class CalculateFactory {
 	/**
 	 * 创建参数上下文
 	 *
-	 * @return {@link Param}
+	 * @return {@link ParamContext}
 	 */
-	public Param createParam() {
-		return Param.getInstance(config);
+	@SneakyThrows
+	public ParamContext createParam() {
+		ParamContext paramContext = (ParamContext) config.getParamContextClass().newInstance();
+		paramContext.setCalculateConfig(config);
+		return paramContext;
 	}
 
 	/**

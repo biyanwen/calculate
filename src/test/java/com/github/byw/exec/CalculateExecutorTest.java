@@ -6,7 +6,7 @@ import com.github.byw.exec.config.FunctionConfig;
 import com.github.byw.factory.CalculateFactory;
 import com.github.byw.formula.FormulaConditions;
 import com.github.byw.formula.FormulaManager;
-import com.github.byw.param.Param;
+import com.github.byw.param.ParamContext;
 import com.github.byw.result.ResultManager;
 import com.google.common.collect.Lists;
 import com.ql.util.express.Operator;
@@ -28,7 +28,7 @@ class CalculateExecutorTest {
 		CalculateFactory factory = CalculateFactory.createFactory();
 		// 单值计算
 		CalculateExecutor executor = factory.createExecutor();
-		Param param = factory.createParam();
+		ParamContext param = factory.createParam();
 		param.addNumber("小明的数学成绩", 90);
 		param.addNumber("小明的语文成绩", 80);
 		param.addNumber("小明的数学成绩", 70);
@@ -46,7 +46,7 @@ class CalculateExecutorTest {
 		assertEquals(new BigDecimal("146.6666666666"), avgDouble);
 
 		//多值计算
-		Param param_many = factory.createParam();
+		ParamContext param_many = factory.createParam();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 90));
 		param_many.addArray("小红3次考试的数学成绩", Lists.newArrayList(90, 90, 70));
 
@@ -65,7 +65,7 @@ class CalculateExecutorTest {
 	@Test
 	public void operator_test() {
 		CalculateFactory factory = CalculateFactory.createFactory();
-		Param param_many = factory.createParam();
+		ParamContext param_many = factory.createParam();
 		CalculateExecutor executor = factory.createExecutor();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 70));
 
@@ -111,7 +111,7 @@ class CalculateExecutorTest {
 		//单值计算 同时设置开始和结束条件
 		CalculateFactory factory = CalculateFactory.createFactory();
 		CalculateExecutor executor = factory.createExecutor();
-		Param param = factory.createParam();
+		ParamContext param = factory.createParam();
 		param.addNumber("小明的数学成绩", 90);
 
 		FormulaManager formulaManager = factory.createFormulaManager();
@@ -130,7 +130,7 @@ class CalculateExecutorTest {
 		assertEquals(new BigDecimal("100"), resultManager.getNumResult("小明的数学成绩"));
 
 		//单值计算 只设置结束条件
-		Param param2 = factory.createParam();
+		ParamContext param2 = factory.createParam();
 		param2.addNumber("小红的数学成绩", 90);
 
 		FormulaManager formulaManager2 = factory.createFormulaManager();
@@ -146,7 +146,7 @@ class CalculateExecutorTest {
 		//多值计算
 		//单值计算 同时设置开始和结束条件
 		//如果当前成绩低于88就加1，直到成绩不小于90停止
-		Param param_many = factory.createParam();
+		ParamContext param_many = factory.createParam();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 90));
 
 		FormulaManager formulaManager_many = factory.createFormulaManager();
@@ -176,7 +176,7 @@ class CalculateExecutorTest {
 		CalculateFactory factory = CalculateFactory.createFactory();
 		// 单值计算
 		CalculateExecutor executor = factory.createExecutor();
-		Param instance = factory.createParam();
+		ParamContext instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
 		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("结果 = 圆周率 + 1", new FormulaConditions() {
@@ -195,7 +195,7 @@ class CalculateExecutorTest {
 		assertEquals(BigDecimal.valueOf(4.1), 结果1);
 
 		//多值计算
-		Param param_many = factory.createParam();
+		ParamContext param_many = factory.createParam();
 		param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
 		FormulaManager formula_many = factory.createFormulaManager();
 		formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
@@ -233,7 +233,7 @@ class CalculateExecutorTest {
 		});
 		// 多值计算的公式中，变量和结果名称必须在结尾标注了 _index
 		assertThrows(CalculateException.class, () -> {
-			Param param_many = factory.createParam();
+			ParamContext param_many = factory.createParam();
 			param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
 			FormulaManager formula_many = factory.createFormulaManager();
 			formula_many.add("结果 = 小明最近三年身高_index + 1", new FormulaConditions() {
@@ -246,7 +246,7 @@ class CalculateExecutorTest {
 		});
 		// 多值计算无法获取参数长度
 		assertThrows(CalculateException.class, () -> {
-			Param param_many = factory.createParam();
+			ParamContext param_many = factory.createParam();
 			FormulaManager formula_many = factory.createFormulaManager();
 			formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
 				@Override
@@ -269,7 +269,7 @@ class CalculateExecutorTest {
 		CalculateFactory factory = CalculateFactory.createFactory(calculateConfig);
 		CalculateExecutor executor = factory.createExecutor();
 
-		Param instance = factory.createParam();
+		ParamContext instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
 		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("结果 = testFunction(圆周率) + 1");
@@ -284,7 +284,7 @@ class CalculateExecutorTest {
 		CalculateFactory factory = CalculateFactory.createFactory(calculateConfig);
 		CalculateExecutor executor = factory.createExecutor();
 
-		Param instance = factory.createParam();
+		ParamContext instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
 		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("结果 = 圆周率 + 1", new FormulaConditions() {
