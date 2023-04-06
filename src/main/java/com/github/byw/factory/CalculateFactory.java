@@ -2,6 +2,7 @@ package com.github.byw.factory;
 
 import com.github.byw.exec.CalculateExecutor;
 import com.github.byw.exec.config.CalculateConfig;
+import com.github.byw.formula.FormulaManager;
 import com.github.byw.param.Param;
 import lombok.Data;
 
@@ -40,11 +41,30 @@ public class CalculateFactory {
 		return calculateFactory;
 	}
 
+	/**
+	 * 创建参数上下文
+	 *
+	 * @return {@link Param}
+	 */
 	public Param createParam() {
 		return Param.getInstance(config);
 	}
 
+	/**
+	 * 创建公式执行器
+	 *
+	 * @return {@link CalculateExecutor}
+	 */
 	public CalculateExecutor createExecutor() {
 		return CalculateExecutor.getInstance(config);
+	}
+
+	/**
+	 * 创建公式管理器
+	 *
+	 * @return {@link FormulaManager}
+	 */
+	public FormulaManager createFormulaManager() {
+		return FormulaManager.getInstance();
 	}
 }

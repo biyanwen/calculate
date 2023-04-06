@@ -33,7 +33,7 @@ class CalculateExecutorTest {
 		param.addNumber("小明的语文成绩", 80);
 		param.addNumber("小明的数学成绩", 70);
 
-		FormulaManager formulaManager = FormulaManager.getInstance();
+		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("小明的平均成绩 = (小明的数学成绩 + 小明的语文成绩 + 小明的数学成绩)/3");
 		formulaManager.add("小明平均成绩的2倍 = 小明的平均成绩 * 2");
 		ResultManager resultManager = executor.exec(param, formulaManager);
@@ -50,7 +50,7 @@ class CalculateExecutorTest {
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 90));
 		param_many.addArray("小红3次考试的数学成绩", Lists.newArrayList(90, 90, 70));
 
-		FormulaManager formulaManager_many = FormulaManager.getInstance();
+		FormulaManager formulaManager_many = factory.createFormulaManager();
 		formulaManager_many.add("每次考试小红比小明多几分_index = 小红3次考试的数学成绩_index - 小明3次考试的数学成绩_index");
 		ResultManager resultManager_mangy = executor.exec(param_many, formulaManager_many);
 		List<BigDecimal> 每次考试小红比小明多几分 = resultManager_mangy.getNumResultList("每次考试小红比小明多几分");
@@ -69,7 +69,7 @@ class CalculateExecutorTest {
 		CalculateExecutor executor = factory.createExecutor();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 70));
 
-		FormulaManager formulaManager_many = FormulaManager.getInstance();
+		FormulaManager formulaManager_many = factory.createFormulaManager();
 		// 列表内的数值加和
 		formulaManager_many.add("加和结果 = listSum(小明3次考试的数学成绩)");
 		// 列表内的数值最大值
@@ -114,7 +114,7 @@ class CalculateExecutorTest {
 		Param param = factory.createParam();
 		param.addNumber("小明的数学成绩", 90);
 
-		FormulaManager formulaManager = FormulaManager.getInstance();
+		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("小明的数学成绩 = 小明的数学成绩 + 1", new FormulaConditions() {
 			@Override
 			public String getStartConditions() {
@@ -133,7 +133,7 @@ class CalculateExecutorTest {
 		Param param2 = factory.createParam();
 		param2.addNumber("小红的数学成绩", 90);
 
-		FormulaManager formulaManager2 = FormulaManager.getInstance();
+		FormulaManager formulaManager2 = factory.createFormulaManager();
 		formulaManager2.add("小红的数学成绩 = 小红的数学成绩 + 1", new FormulaConditions() {
 			@Override
 			public String getStopConditions() {
@@ -149,7 +149,7 @@ class CalculateExecutorTest {
 		Param param_many = factory.createParam();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 90));
 
-		FormulaManager formulaManager_many = FormulaManager.getInstance();
+		FormulaManager formulaManager_many = factory.createFormulaManager();
 		formulaManager_many.add("小明3次考试的数学成绩_index = 小明3次考试的数学成绩_index + 1", new FormulaConditions() {
 			@Override
 			public String getStartConditions() {
@@ -178,7 +178,7 @@ class CalculateExecutorTest {
 		CalculateExecutor executor = factory.createExecutor();
 		Param instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
-		FormulaManager formulaManager = FormulaManager.getInstance();
+		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("结果 = 圆周率 + 1", new FormulaConditions() {
 			@Override
 			public Integer retainDecimal() {
@@ -197,7 +197,7 @@ class CalculateExecutorTest {
 		//多值计算
 		Param param_many = factory.createParam();
 		param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
-		FormulaManager formula_many = FormulaManager.getInstance();
+		FormulaManager formula_many = factory.createFormulaManager();
 		formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
 			@Override
 			public Integer retainDecimal() {
@@ -227,7 +227,7 @@ class CalculateExecutorTest {
 		CalculateExecutor executor = factory.createExecutor();
 		// Param 为必传
 		assertThrows(CalculateException.class, () -> {
-			FormulaManager formulaManager = FormulaManager.getInstance();
+			FormulaManager formulaManager = factory.createFormulaManager();
 			formulaManager.add("小明的平均成绩 = (小明的数学成绩 + 小明的语文成绩 + 小明的数学成绩)/3");
 			executor.exec(null, formulaManager);
 		});
@@ -235,7 +235,7 @@ class CalculateExecutorTest {
 		assertThrows(CalculateException.class, () -> {
 			Param param_many = factory.createParam();
 			param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
-			FormulaManager formula_many = FormulaManager.getInstance();
+			FormulaManager formula_many = factory.createFormulaManager();
 			formula_many.add("结果 = 小明最近三年身高_index + 1", new FormulaConditions() {
 				@Override
 				public Integer retainDecimal() {
@@ -247,7 +247,7 @@ class CalculateExecutorTest {
 		// 多值计算无法获取参数长度
 		assertThrows(CalculateException.class, () -> {
 			Param param_many = factory.createParam();
-			FormulaManager formula_many = FormulaManager.getInstance();
+			FormulaManager formula_many = factory.createFormulaManager();
 			formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
 				@Override
 				public Integer retainDecimal() {
@@ -271,7 +271,7 @@ class CalculateExecutorTest {
 
 		Param instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
-		FormulaManager formulaManager = FormulaManager.getInstance();
+		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("结果 = testFunction(圆周率) + 1");
 		BigDecimal 结果 = executor.exec(instance, formulaManager).getNumResult("结果");
 		assertEquals(BigDecimal.valueOf(10087), 结果);
@@ -286,7 +286,7 @@ class CalculateExecutorTest {
 
 		Param instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
-		FormulaManager formulaManager = FormulaManager.getInstance();
+		FormulaManager formulaManager = factory.createFormulaManager();
 		formulaManager.add("结果 = 圆周率 + 1", new FormulaConditions() {
 			@Override
 			public Integer retainDecimal() {
