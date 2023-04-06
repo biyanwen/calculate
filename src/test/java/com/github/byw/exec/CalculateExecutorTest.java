@@ -3,6 +3,7 @@ package com.github.byw.exec;
 import com.github.byw.exception.CalculateException;
 import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.exec.config.FunctionConfig;
+import com.github.byw.factory.CalculateFactory;
 import com.github.byw.formula.FormulaConditions;
 import com.github.byw.formula.FormulaManager;
 import com.github.byw.param.Param;
@@ -24,8 +25,10 @@ class CalculateExecutorTest {
 	 */
 	@Test
 	public void common_compute() {
+		CalculateFactory factory = CalculateFactory.createFactory();
 		// 单值计算
-		Param param = Param.getInstance();
+		CalculateExecutor executor = factory.createExecutor();
+		Param param = factory.createParam();
 		param.addNumber("小明的数学成绩", 90);
 		param.addNumber("小明的语文成绩", 80);
 		param.addNumber("小明的数学成绩", 70);
@@ -33,7 +36,7 @@ class CalculateExecutorTest {
 		FormulaManager formulaManager = FormulaManager.getInstance();
 		formulaManager.add("小明的平均成绩 = (小明的数学成绩 + 小明的语文成绩 + 小明的数学成绩)/3");
 		formulaManager.add("小明平均成绩的2倍 = 小明的平均成绩 * 2");
-		ResultManager resultManager = CalculateExecutor.exec(param, formulaManager);
+		ResultManager resultManager = executor.exec(param, formulaManager);
 		BigDecimal avgGrade = resultManager.getNumResult("小明的平均成绩");
 		BigDecimal avgDouble = resultManager.getNumResult("小明平均成绩的2倍");
 
@@ -43,13 +46,13 @@ class CalculateExecutorTest {
 		assertEquals(new BigDecimal("146.6666666666"), avgDouble);
 
 		//多值计算
-		Param param_many = Param.getInstance();
+		Param param_many = factory.createParam();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 90));
 		param_many.addArray("小红3次考试的数学成绩", Lists.newArrayList(90, 90, 70));
 
 		FormulaManager formulaManager_many = FormulaManager.getInstance();
 		formulaManager_many.add("每次考试小红比小明多几分_index = 小红3次考试的数学成绩_index - 小明3次考试的数学成绩_index");
-		ResultManager resultManager_mangy = CalculateExecutor.exec(param_many, formulaManager_many);
+		ResultManager resultManager_mangy = executor.exec(param_many, formulaManager_many);
 		List<BigDecimal> 每次考试小红比小明多几分 = resultManager_mangy.getNumResultList("每次考试小红比小明多几分");
 		boolean equalCollection = CollectionUtils.isEqualCollection(Lists.newArrayList(BigDecimal.valueOf(10), BigDecimal.valueOf(0), BigDecimal.valueOf(-20))
 				, 每次考试小红比小明多几分);
@@ -61,7 +64,9 @@ class CalculateExecutorTest {
 	 */
 	@Test
 	public void operator_test() {
-		Param param_many = Param.getInstance();
+		CalculateFactory factory = CalculateFactory.createFactory();
+		Param param_many = factory.createParam();
+		CalculateExecutor executor = factory.createExecutor();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 70));
 
 		FormulaManager formulaManager_many = FormulaManager.getInstance();
@@ -76,7 +81,7 @@ class CalculateExecutorTest {
 		// 默认值，直接赋值 0
 		formulaManager_many.add("默认加0分_index = 小明3次考试的数学成绩_index + defaultZero(额外加分项)");
 
-		ResultManager resultManager_mangy = CalculateExecutor.exec(param_many, formulaManager_many);
+		ResultManager resultManager_mangy = executor.exec(param_many, formulaManager_many);
 		BigDecimal 加和结果 = resultManager_mangy.getNumResult("加和结果");
 		assertEquals(BigDecimal.valueOf(240), 加和结果);
 
@@ -104,7 +109,9 @@ class CalculateExecutorTest {
 	public void start_stop() {
 		//单值计算
 		//单值计算 同时设置开始和结束条件
-		Param param = Param.getInstance();
+		CalculateFactory factory = CalculateFactory.createFactory();
+		CalculateExecutor executor = factory.createExecutor();
+		Param param = factory.createParam();
 		param.addNumber("小明的数学成绩", 90);
 
 		FormulaManager formulaManager = FormulaManager.getInstance();
@@ -119,11 +126,11 @@ class CalculateExecutorTest {
 				return "小明的数学成绩 == 100";
 			}
 		});
-		ResultManager resultManager = CalculateExecutor.exec(param, formulaManager);
+		ResultManager resultManager = executor.exec(param, formulaManager);
 		assertEquals(new BigDecimal("100"), resultManager.getNumResult("小明的数学成绩"));
 
 		//单值计算 只设置结束条件
-		Param param2 = Param.getInstance();
+		Param param2 = factory.createParam();
 		param2.addNumber("小红的数学成绩", 90);
 
 		FormulaManager formulaManager2 = FormulaManager.getInstance();
@@ -133,13 +140,13 @@ class CalculateExecutorTest {
 				return "小红的数学成绩 == 100";
 			}
 		});
-		BigDecimal 小红的数学成绩 = CalculateExecutor.exec(param2, formulaManager2).getNumResult("小红的数学成绩");
+		BigDecimal 小红的数学成绩 = executor.exec(param2, formulaManager2).getNumResult("小红的数学成绩");
 		assertEquals(new BigDecimal("100"), 小红的数学成绩);
 
 		//多值计算
 		//单值计算 同时设置开始和结束条件
 		//如果当前成绩低于88就加1，直到成绩不小于90停止
-		Param param_many = Param.getInstance();
+		Param param_many = factory.createParam();
 		param_many.addArray("小明3次考试的数学成绩", Lists.newArrayList(80, 90, 90));
 
 		FormulaManager formulaManager_many = FormulaManager.getInstance();
@@ -154,7 +161,7 @@ class CalculateExecutorTest {
 				return "小明3次考试的数学成绩_index >= 90";
 			}
 		});
-		ResultManager resultManager_mangy = CalculateExecutor.exec(param_many, formulaManager_many);
+		ResultManager resultManager_mangy = executor.exec(param_many, formulaManager_many);
 		List<BigDecimal> 小明3次考试的数学成绩 = resultManager_mangy.getNumResultList("小明3次考试的数学成绩");
 		boolean equalCollection = CollectionUtils.isEqualCollection(Lists.newArrayList(BigDecimal.valueOf(90), BigDecimal.valueOf(90), BigDecimal.valueOf(90))
 				, 小明3次考试的数学成绩);
@@ -166,8 +173,10 @@ class CalculateExecutorTest {
 	 */
 	@Test
 	public void round_test() {
+		CalculateFactory factory = CalculateFactory.createFactory();
 		// 单值计算
-		Param instance = Param.getInstance();
+		CalculateExecutor executor = factory.createExecutor();
+		Param instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
 		FormulaManager formulaManager = FormulaManager.getInstance();
 		formulaManager.add("结果 = 圆周率 + 1", new FormulaConditions() {
@@ -176,16 +185,17 @@ class CalculateExecutorTest {
 				return 3;
 			}
 		});
-		BigDecimal 结果 = CalculateExecutor.exec(instance, formulaManager).getNumResult("结果");
+		BigDecimal 结果 = executor.exec(instance, formulaManager).getNumResult("结果");
 		assertEquals(BigDecimal.valueOf(4.142), 结果);
 		// 通过配置设置
 		CalculateConfig config = new CalculateConfig();
 		config.setRetainDecimal(1);
-		BigDecimal 结果1 = CalculateExecutor.exec(instance, formulaManager, config).getNumResult("结果");
+		CalculateFactory factorySingle = CalculateFactory.createFactory(config);
+		BigDecimal 结果1 = factorySingle.createExecutor().exec(instance, formulaManager).getNumResult("结果");
 		assertEquals(BigDecimal.valueOf(4.1), 结果1);
 
 		//多值计算
-		Param param_many = Param.getInstance();
+		Param param_many = factory.createParam();
 		param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
 		FormulaManager formula_many = FormulaManager.getInstance();
 		formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
@@ -194,30 +204,36 @@ class CalculateExecutorTest {
 				return 1;
 			}
 		});
-		List<BigDecimal> 结果数组 = CalculateExecutor.exec(param_many, formula_many).getNumResultList("结果");
+		List<BigDecimal> 结果数组 = executor.exec(param_many, formula_many).getNumResultList("结果");
 		boolean equalCollection = CollectionUtils.isEqualCollection(Lists.newArrayList(BigDecimal.valueOf(169.6), BigDecimal.valueOf(170.6),
 				BigDecimal.valueOf(171.6)), 结果数组);
 		assertTrue(equalCollection);
 		// 通过配置设置
 		CalculateConfig config2 = new CalculateConfig();
 		config2.setRetainDecimal(0);
-		List<BigDecimal> 结果数组2 = CalculateExecutor.exec(param_many, formula_many, config2).getNumResultList("结果");
+		CalculateFactory factoryMany = CalculateFactory.createFactory(config2);
+		List<BigDecimal> 结果数组2 = factoryMany.createExecutor().exec(param_many, formula_many).getNumResultList("结果");
 		boolean equalCollection2 = CollectionUtils.isEqualCollection(Lists.newArrayList(BigDecimal.valueOf(170.0), BigDecimal.valueOf(171.0),
 				BigDecimal.valueOf(172.0)), 结果数组2);
 		assertTrue(equalCollection2);
 	}
 
+	/**
+	 * 异常测试
+	 */
 	@Test
 	public void exception() {
+		CalculateFactory factory = CalculateFactory.createFactory();
+		CalculateExecutor executor = factory.createExecutor();
 		// Param 为必传
 		assertThrows(CalculateException.class, () -> {
 			FormulaManager formulaManager = FormulaManager.getInstance();
 			formulaManager.add("小明的平均成绩 = (小明的数学成绩 + 小明的语文成绩 + 小明的数学成绩)/3");
-			CalculateExecutor.exec(null, formulaManager);
+			executor.exec(null, formulaManager);
 		});
 		// 多值计算的公式中，变量和结果名称必须在结尾标注了 _index
 		assertThrows(CalculateException.class, () -> {
-			Param param_many = Param.getInstance();
+			Param param_many = factory.createParam();
 			param_many.addArray("小明最近三年身高", Lists.newArrayList(168.55, 169.55, 170.55));
 			FormulaManager formula_many = FormulaManager.getInstance();
 			formula_many.add("结果 = 小明最近三年身高_index + 1", new FormulaConditions() {
@@ -226,11 +242,11 @@ class CalculateExecutorTest {
 					return 1;
 				}
 			});
-			CalculateExecutor.exec(param_many, formula_many);
+			executor.exec(param_many, formula_many);
 		});
 		// 多值计算无法获取参数长度
 		assertThrows(CalculateException.class, () -> {
-			Param param_many = Param.getInstance();
+			Param param_many = factory.createParam();
 			FormulaManager formula_many = FormulaManager.getInstance();
 			formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
 				@Override
@@ -238,21 +254,47 @@ class CalculateExecutorTest {
 					return 1;
 				}
 			});
-			CalculateExecutor.exec(param_many, formula_many);
+			executor.exec(param_many, formula_many);
 		});
 	}
 
+	/**
+	 * 测试注册自定义函数
+	 */
 	@Test
 	public void register_function() {
 		CalculateConfig calculateConfig = new CalculateConfig();
 		calculateConfig.setFunctionConfig(new FunctionConfig().addFunction("testFunction", new TestFunction()));
 
-		Param instance = Param.getInstance();
+		CalculateFactory factory = CalculateFactory.createFactory(calculateConfig);
+		CalculateExecutor executor = factory.createExecutor();
+
+		Param instance = factory.createParam();
 		instance.addNumber("圆周率", 3.14159);
 		FormulaManager formulaManager = FormulaManager.getInstance();
 		formulaManager.add("结果 = testFunction(圆周率) + 1");
-		BigDecimal 结果 = CalculateExecutor.exec(instance, formulaManager, calculateConfig).getNumResult("结果");
+		BigDecimal 结果 = executor.exec(instance, formulaManager).getNumResult("结果");
 		assertEquals(BigDecimal.valueOf(10087), 结果);
+	}
+
+	@Test
+	public void log_operate() {
+		CalculateConfig calculateConfig = new CalculateConfig();
+		calculateConfig.setLogOperator(System.out::println);
+		CalculateFactory factory = CalculateFactory.createFactory(calculateConfig);
+		CalculateExecutor executor = factory.createExecutor();
+
+		Param instance = factory.createParam();
+		instance.addNumber("圆周率", 3.14159);
+		FormulaManager formulaManager = FormulaManager.getInstance();
+		formulaManager.add("结果 = 圆周率 + 1", new FormulaConditions() {
+			@Override
+			public Integer retainDecimal() {
+				return 3;
+			}
+		});
+		BigDecimal 结果 = executor.exec(instance, formulaManager).getNumResult("结果");
+		assertEquals(BigDecimal.valueOf(4.142), 结果);
 	}
 
 	/**

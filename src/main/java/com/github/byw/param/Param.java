@@ -1,7 +1,9 @@
 package com.github.byw.param;
 
 import com.github.byw.exception.CalculateException;
+import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.helper.StringFormatter;
+import com.github.byw.log.LogOperator;
 import com.google.common.collect.Lists;
 import com.ql.util.express.DefaultContext;
 import com.ql.util.express.IExpressContext;
@@ -20,8 +22,6 @@ import java.util.Map;
  * @date 2022/11/23
  */
 public class Param {
-	private static final Logger LOGGER = LoggerFactory.getLogger(Param.class);
-
 	/**
 	 * 参数上下文
 	 * key：参数名称 value：参数值
@@ -34,11 +34,19 @@ public class Param {
 	 */
 	private final Map<String, ParamConfig> configContext = new HashMap<>();
 
+	private LogOperator logOperator;
+
 	private Param() {
 	}
 
 	public static Param getInstance() {
 		return new Param();
+	}
+
+	public static Param getInstance(CalculateConfig config) {
+		Param param = new Param();
+		param.logOperator = config.getLogOperator();
+		return param;
 	}
 
 	/**
@@ -163,7 +171,7 @@ public class Param {
 
 		@Override
 		public Object put(String key, Object value) {
-			LOGGER.info("参数名：" + key + " 值：" + value);
+			logOperator.operate("参数名：" + key + " 值：" + value);
 
 			boolean isArray = value instanceof Collection;
 			int size = 1;
@@ -178,7 +186,7 @@ public class Param {
 		public Object get(Object key) {
 			Object obj = super.get(key);
 			if (obj == null) {
-				LOGGER.info("参数值为空：" + key);
+				logOperator.operate("参数值为空：" + key);
 			}
 			return obj;
 		}

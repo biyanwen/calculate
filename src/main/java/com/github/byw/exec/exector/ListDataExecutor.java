@@ -36,7 +36,6 @@ public class ListDataExecutor extends AbstractDataExecutor {
 	 */
 	private static final List<Character> keywords = Lists.newArrayList('=', '|', '&', '+', '-', '*', '/', ',', ')', ' ', ':');
 	private static final char LEFT_BRACKET = '(';
-	protected Param param;
 
 	/**
 	 * 循环是否由外部参数控制
@@ -72,12 +71,11 @@ public class ListDataExecutor extends AbstractDataExecutor {
 	}
 
 	@Override
-	public void exec(Formula formulaInstance, Param param, CalculateConfig config) {
-		this.param = param;
-		doExec(formulaInstance, config);
+	protected void doExec(Formula formulaInstance) {
+		doDetailExec(formulaInstance, config);
 	}
 
-	private void doExec(Formula formulaInstance, CalculateConfig config) {
+	private void doDetailExec(Formula formulaInstance, CalculateConfig config) {
 		demise = config.getCurrentIndex() != null;
 		currentIndex = config.getCurrentIndex();
 		paramTotalSize = config.getParamTotalSize();
@@ -144,7 +142,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 		for (FormulaMessage formulaMessage : formulaMessages) {
 
 			execute(formulaMessage, i, oldFormula -> {
-				printLog(oldFormula, startCondition, stopCondition);
+				printFormulaLog(oldFormula, startCondition, stopCondition);
 				if (config.getRetainDecimal() != null) {
 					return modificationFormula(oldFormula, config.getRetainDecimal());
 				}

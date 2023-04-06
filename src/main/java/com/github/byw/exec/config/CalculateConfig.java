@@ -1,5 +1,7 @@
 package com.github.byw.exec.config;
 
+import com.github.byw.log.LogOperator;
+import com.github.byw.log.PrintLogOperator;
 import lombok.Data;
 
 /**
@@ -42,6 +44,11 @@ public class CalculateConfig {
 	 * 注册自定义函数
 	 */
 	private FunctionConfig functionConfig;
+
+	/**
+	 * 如何处理计算过程中产生的日志
+	 */
+	private LogOperator logOperator = new PrintLogOperator();
 
 	public CalculateConfig() {
 	}

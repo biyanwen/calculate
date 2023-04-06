@@ -20,8 +20,6 @@ import java.util.Optional;
  */
 public class SingleDataExecutor extends AbstractDataExecutor {
 
-	protected Param param;
-
 	@Override
 	public boolean canHandle(Formula formulaInstance) {
 		return true;
@@ -29,8 +27,7 @@ public class SingleDataExecutor extends AbstractDataExecutor {
 
 	@SneakyThrows
 	@Override
-	public void exec(Formula formulaInstance, Param param, CalculateConfig config) {
-		this.param = param;
+	protected void doExec(Formula formulaInstance) {
 
 		FormulaConditions formulaConditions = formulaInstance.getConditions();
 		if (formulaConditions == null) {
@@ -67,7 +64,7 @@ public class SingleDataExecutor extends AbstractDataExecutor {
 				startCondition = conditions.getStartConditions() == null ? "" : String.valueOf(conditions.getStartConditions());
 				stopCondition = conditions.getStopConditions() == null ? "" : String.valueOf(conditions.getStopConditions());
 			}
-			printLog(toBeExecutedFormula, startCondition, stopCondition);
+			printFormulaLog(toBeExecutedFormula, startCondition, stopCondition);
 			if (config.getRetainDecimal() != null) {
 				toBeExecutedFormula = modificationFormula(toBeExecutedFormula, config.getRetainDecimal());
 			}

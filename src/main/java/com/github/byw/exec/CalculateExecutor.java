@@ -15,7 +15,6 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 计算执行者
@@ -25,28 +24,45 @@ import java.util.Optional;
  */
 public class CalculateExecutor {
 
-	@SneakyThrows
-	public static ResultManager exec(Param param, FormulaManager formulaManager, CalculateConfig... configs) {
-		if (param == null) {
-			throw new CalculateException("param 参数不能为 null ");
-		}
-		CalculateConfig config = new CalculateConfig();
-		if (configs.length > 0) {
-			config = configs[0];
-		}
-		IExpressContext<String, Object> paramContext = param.getParamContext();
-		for (Formula formulaInstance : formulaManager.getFormulaList()) {
-			Executor executor = ExecutorManage.getInstance().get(formulaInstance);
-			if (config.getFunctionConfig() != null) {
-				config.getFunctionConfig().getOperatorMap().forEach(executor::registerFunction);
-			}
-			executor.exec(formulaInstance, param, config);
-		}
-		return new DefaultResultManager(paramContext);
-	}
-
 	public static ResultManager getResultManager(Param param) {
 		return new DefaultResultManager(param.getParamContext());
+	}
+
+	private CalculateExecutor(CalculateConfig config) {
+		this.config = config;
+	}
+
+	private CalculateConfig config = new CalculateConfig();
+
+	public static CalculateExecutor getInstance(CalculateConfig config) {
+		return new CalculateExecutor(config);
+	}
+
+	public ResultManager exec(Param param, FormulaManager formulaManager) {
+		return CalculateExecutorBean.exec(param, formulaManager, config);
+	}
+
+	private static class CalculateExecutorBean {
+
+		@SneakyThrows
+		public static ResultManager exec(Param param, FormulaManager formulaManager, CalculateConfig... configs) {
+			if (param == null) {
+				throw new CalculateException("param 参数不能为 null ");
+			}
+			CalculateConfig config = new CalculateConfig();
+			if (configs.length > 0) {
+				config = configs[0];
+			}
+			IExpressContext<String, Object> paramContext = param.getParamContext();
+			for (Formula formulaInstance : formulaManager.getFormulaList()) {
+				Executor executor = CalculateExecutor.ExecutorManage.getInstance().get(formulaInstance);
+				if (config.getFunctionConfig() != null) {
+					config.getFunctionConfig().getOperatorMap().forEach(executor::registerFunction);
+				}
+				executor.exec(formulaInstance, param, config);
+			}
+			return new DefaultResultManager(paramContext);
+		}
 	}
 
 	private static class ExecutorManage {

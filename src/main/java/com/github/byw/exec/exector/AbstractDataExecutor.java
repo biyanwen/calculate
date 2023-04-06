@@ -1,6 +1,9 @@
 package com.github.byw.exec.exector;
 
+import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.exec.operator.*;
+import com.github.byw.formula.Formula;
+import com.github.byw.log.LogOperator;
 import com.github.byw.param.Param;
 import com.ql.util.express.ExpressRunner;
 import com.ql.util.express.Operator;
@@ -23,6 +26,10 @@ public abstract class AbstractDataExecutor implements Executor {
 
 	protected static final char EQUAL = '=';
 
+	protected Param param;
+
+	protected CalculateConfig config;
+
 	{
 		RUNNER.addFunction("listMax", new ListMax());
 		RUNNER.addFunction("listMin", new ListMin());
@@ -30,6 +37,20 @@ public abstract class AbstractDataExecutor implements Executor {
 		RUNNER.addFunction("defaultZero", new DefaultZero());
 		RUNNER.addFunction("default", new Default());
 	}
+
+	@Override
+	public void exec(Formula formulaInstance, Param param, CalculateConfig config) {
+		this.param = param;
+		this.config = config;
+		doExec(formulaInstance);
+	}
+
+	/**
+	 * 执行计算操作
+	 *
+	 * @param formulaInstance 公式实例
+	 */
+	protected abstract void doExec(Formula formulaInstance);
 
 	@Override
 	public void registerFunction(String name, Operator operator) {
@@ -84,13 +105,13 @@ public abstract class AbstractDataExecutor implements Executor {
 	}
 
 	/**
-	 * 打印日志
+	 * 打印公式的执行日志
 	 *
 	 * @param toBeExecutedFormula 要执行公式
 	 * @param startCondition      开始条件
 	 * @param stopCondition       停止条件
 	 */
-	protected void printLog(String toBeExecutedFormula, String startCondition, String stopCondition) {
+	protected void printFormulaLog(String toBeExecutedFormula, String startCondition, String stopCondition) {
 		StringBuilder builder = new StringBuilder("正在执行公式：");
 		String logMessage = builder.append(toBeExecutedFormula)
 				.append("；开始执行条件：")
@@ -98,7 +119,7 @@ public abstract class AbstractDataExecutor implements Executor {
 				.append("；结束执行条件：")
 				.append(StringUtils.isBlank(stopCondition) ? "无约束" : stopCondition)
 				.toString();
-		LOGGER.info(logMessage);
+		config.getLogOperator().operate(logMessage);
 	}
 
 }
