@@ -1,50 +1,23 @@
 package com.github.byw.formula;
 
-import com.github.byw.exception.CalculateException;
-import com.github.byw.helper.StringFormatter;
-import com.google.common.collect.Lists;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 公式
+ * 公式管理器
  *
  * @author byw
- * @date 2022/11/23
+ * @date 2023/04/06
  */
-public class FormulaManager {
+public interface FormulaManager {
 
 	/**
-	 * 公式列表
-	 */
-	private final List<Formula> formulaList = new ArrayList<>();
-
-	private FormulaManager() {
-
-	}
-
-	public static FormulaManager getInstance() {
-		return new FormulaManager();
-	}
-
-	/**
-	 * 添加
+	 * 添加公式
 	 *
 	 * @param formula    公式
 	 * @param conditions 条件
 	 * @return {@link FormulaManager}
 	 */
-	public FormulaManager add(String formula, FormulaConditions... conditions) {
-		if (StringUtils.isBlank(formula)) {
-			throw new CalculateException("公式不能为空");
-		}
-		Formula formulaInstance = new Formula(formula, conditions.length == 0 ? null : conditions[0]);
-		formulaList.add(formulaInstance);
-		return this;
-	}
+	FormulaManager add(String formula, FormulaConditions... conditions);
 
 	/**
 	 * 添加
@@ -54,9 +27,7 @@ public class FormulaManager {
 	 * @param conditions 条件
 	 * @return {@link FormulaManager}
 	 */
-	public FormulaManager add(String template, String arg, FormulaConditions... conditions) {
-		return this.add(template, Lists.newArrayList(arg), conditions);
-	}
+	FormulaManager add(String template, String arg, FormulaConditions... conditions);
 
 	/**
 	 * 添加
@@ -66,10 +37,7 @@ public class FormulaManager {
 	 * @param conditions 条件
 	 * @return {@link FormulaManager}
 	 */
-	public FormulaManager add(String template, List<String> args, FormulaConditions... conditions) {
-		String format = StringFormatter.format(template, args.toArray(new String[0]));
-		return this.add(format, conditions);
-	}
+	FormulaManager add(String template, List<String> args, FormulaConditions... conditions);
 
 	/**
 	 * 添加公式列表
@@ -79,16 +47,12 @@ public class FormulaManager {
 	 * @param conditions  条件
 	 * @return {@link FormulaManager}
 	 */
-	public FormulaManager addList(List<String> formulaList, FormulaConditions... conditions) {
-		if (CollectionUtils.isEmpty(formulaList)) {
-			throw new CalculateException("公式不能为空");
-		}
-		Formula formulaInstance = new Formula(formulaList, conditions.length == 0 ? null : conditions[0]);
-		this.formulaList.add(formulaInstance);
-		return this;
-	}
+	FormulaManager addList(List<String> formulaList, FormulaConditions... conditions);
 
-	public List<Formula> getFormulaList() {
-		return formulaList;
-	}
+	/**
+	 * 得到公式列表
+	 *
+	 * @return {@link List}<{@link Formula}>
+	 */
+	List<Formula> getFormulaList();
 }

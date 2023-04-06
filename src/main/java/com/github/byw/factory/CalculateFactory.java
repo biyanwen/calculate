@@ -2,9 +2,11 @@ package com.github.byw.factory;
 
 import com.github.byw.exec.CalculateExecutor;
 import com.github.byw.exec.config.CalculateConfig;
+import com.github.byw.formula.DefaultFormulaManager;
 import com.github.byw.formula.FormulaManager;
 import com.github.byw.param.Param;
 import lombok.Data;
+import lombok.SneakyThrows;
 
 /**
  * 工厂
@@ -64,7 +66,8 @@ public class CalculateFactory {
 	 *
 	 * @return {@link FormulaManager}
 	 */
+	@SneakyThrows
 	public FormulaManager createFormulaManager() {
-		return FormulaManager.getInstance();
+		return (FormulaManager) config.getFormulaManagerClass().newInstance();
 	}
 }

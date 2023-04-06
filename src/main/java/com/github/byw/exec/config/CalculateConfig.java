@@ -1,5 +1,7 @@
 package com.github.byw.exec.config;
 
+import com.github.byw.formula.DefaultFormulaManager;
+import com.github.byw.formula.FormulaManager;
 import com.github.byw.log.LogOperator;
 import com.github.byw.log.PrintLogOperator;
 import lombok.Data;
@@ -50,6 +52,42 @@ public class CalculateConfig {
 	 */
 	private LogOperator logOperator = new PrintLogOperator();
 
+	/**
+	 * 公式管理器
+	 */
+	private Class<?> formulaManagerClass = DefaultFormulaManager.class;
+
 	public CalculateConfig() {
+	}
+
+
+	public CalculateConfig setRetainDecimal(Integer retainDecimal) {
+		this.retainDecimal = retainDecimal;
+		return this;
+	}
+
+	public CalculateConfig setParamTotalSize(Integer paramTotalSize) {
+		this.paramTotalSize = paramTotalSize;
+		return this;
+	}
+
+	public CalculateConfig setCurrentIndex(Integer currentIndex) {
+		this.currentIndex = currentIndex;
+		return this;
+	}
+
+	public CalculateConfig setFunctionConfig(FunctionConfig functionConfig) {
+		this.functionConfig = functionConfig;
+		return this;
+	}
+
+	public CalculateConfig setLogOperator(LogOperator logOperator) {
+		this.logOperator = logOperator;
+		return this;
+	}
+
+	public <T extends FormulaManager> CalculateConfig setFormulaManagerClass(Class<T> tClass) {
+		this.formulaManagerClass = tClass;
+		return this;
 	}
 }
