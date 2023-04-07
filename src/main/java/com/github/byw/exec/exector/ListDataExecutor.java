@@ -5,8 +5,8 @@ import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.formula.Formula;
 import com.github.byw.formula.FormulaConditions;
 import com.github.byw.param.ParamConfig;
+import com.github.byw.param.ParamManager;
 import com.google.common.collect.Lists;
-import com.ql.util.express.IExpressContext;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -189,7 +189,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 	 * @return boolean
 	 */
 	private Object execute(FormulaMessage formulaMessage, int index, Function<String, String>... changeTheFormulaFunctions) {
-		IExpressContext<String, Object> paramContext = param.getParamContext();
+		ParamManager paramContext = param.getParamContext();
 		String originalFormula = formulaMessage.getOriginalFormula();
 		List<String> nameToBeReplacedList = formulaMessage.getNameToBeReplacedList();
 		List<String> parameterOriginalNameList = formulaMessage.getParameterOriginalNameList();
@@ -271,11 +271,11 @@ public class ListDataExecutor extends AbstractDataExecutor {
 	 * @param index                    公式正在使用参数值的索引
 	 * @param newParameterOriginalName 新的参数名称
 	 */
-	private void parameterResolution(FormulaMessage formulaMessage, String parameterOriginalName, boolean isNullJudge, IExpressContext<String, Object> paramContext, int i, int index, String newParameterOriginalName) {
+	private void parameterResolution(FormulaMessage formulaMessage, String parameterOriginalName, boolean isNullJudge, ParamManager paramContext, int i, int index, String newParameterOriginalName) {
 		// 对每个参数按照索引进行拆解，用于后续计算
 		// 第一个是结果参数的名称或者是空判断公式，不需要对参数的数值进行更改
 		// 如果新参数名称已经在上下文中有对应的数值了就不进行替换
-		if (paramContext.get(newParameterOriginalName) != null) {
+		if (paramContext.containsKey(newParameterOriginalName)) {
 			return;
 		}
 		boolean isDefaultFun = checkDefaultFun(formulaMessage.getOriginalFormula(), parameterOriginalName);

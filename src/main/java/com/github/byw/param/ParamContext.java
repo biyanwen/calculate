@@ -1,7 +1,6 @@
 package com.github.byw.param;
 
 import com.github.byw.exec.config.CalculateConfig;
-import com.ql.util.express.IExpressContext;
 
 import java.util.Collection;
 import java.util.List;
@@ -85,9 +84,9 @@ public interface ParamContext {
 	/**
 	 * 得到参数上下文
 	 *
-	 * @return {@link IExpressContext}<{@link String}, {@link Object}>
+	 * @return {@link ParamManager}
 	 */
-	IExpressContext<String, Object> getParamContext();
+	ParamManager getParamContext();
 
 	/**
 	 * 获取配置（每个参数都有自己的配置信息，后续计算的时候会使用）

@@ -9,9 +9,9 @@ import com.github.byw.formula.Formula;
 import com.github.byw.formula.FormulaManager;
 import com.github.byw.param.DefaultParam;
 import com.github.byw.param.ParamContext;
+import com.github.byw.param.ParamManager;
 import com.github.byw.result.DefaultResultManager;
 import com.github.byw.result.ResultManager;
-import com.ql.util.express.IExpressContext;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class CalculateExecutor {
 			if (configs.length > 0) {
 				config = configs[0];
 			}
-			IExpressContext<String, Object> paramContext = param.getParamContext();
+			ParamManager paramContext = param.getParamContext();
 			for (Formula formulaInstance : formulaManager.getFormulaList()) {
 				Executor executor = CalculateExecutor.ExecutorManage.getInstance().get(formulaInstance);
 				if (config.getFunctionConfig() != null) {

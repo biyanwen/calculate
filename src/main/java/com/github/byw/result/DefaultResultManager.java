@@ -1,7 +1,7 @@
 package com.github.byw.result;
 
 import com.github.byw.exception.CalculateException;
-import com.ql.util.express.IExpressContext;
+import com.github.byw.param.ParamManager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -18,9 +18,9 @@ public class DefaultResultManager implements ResultManager {
 	/**
 	 * 参数上下文
 	 */
-	private final IExpressContext<String, Object> paramContext;
+	private final ParamManager paramContext;
 
-	public DefaultResultManager(IExpressContext<String, Object> paramContext) {
+	public DefaultResultManager(ParamManager paramContext) {
 		this.paramContext = paramContext;
 	}
 

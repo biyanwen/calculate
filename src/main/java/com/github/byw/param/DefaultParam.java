@@ -6,7 +6,6 @@ import com.github.byw.helper.StringFormatter;
 import com.github.byw.log.LogOperator;
 import com.google.common.collect.Lists;
 import com.ql.util.express.DefaultContext;
-import com.ql.util.express.IExpressContext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +23,7 @@ public class DefaultParam implements ParamContext {
 	 * 参数上下文
 	 * key：参数名称 value：参数值
 	 */
-	private final IExpressContext<String, Object> paramContext = new LogContext();
+	private final ParamManager paramContext = new LogContext();
 
 	/**
 	 * 配置上下文
@@ -141,10 +140,10 @@ public class DefaultParam implements ParamContext {
 	/**
 	 * 得到参数上下文
 	 *
-	 * @return {@link IExpressContext}<{@link String}, {@link Object}>
+	 * @return {@link ParamManager}
 	 */
 	@Override
-	public IExpressContext<String, Object> getParamContext() {
+	public ParamManager getParamContext() {
 		return paramContext;
 	}
 
@@ -166,7 +165,7 @@ public class DefaultParam implements ParamContext {
 		paramContext.put(paramName, value);
 	}
 
-	private class LogContext extends DefaultContext<String, Object> {
+	private class LogContext extends DefaultContext<String, Object> implements ParamManager {
 
 		@Override
 		public Object put(String key, Object value) {
@@ -188,6 +187,11 @@ public class DefaultParam implements ParamContext {
 				logOperator.operate("参数值为空：" + key);
 			}
 			return obj;
+		}
+
+		@Override
+		public boolean containsKey(String key) {
+			return super.get(key) != null;
 		}
 	}
 }
