@@ -6,6 +6,7 @@ import com.github.byw.exec.config.FunctionConfig;
 import com.github.byw.factory.CalculateFactory;
 import com.github.byw.formula.FormulaConditions;
 import com.github.byw.formula.FormulaManager;
+import com.github.byw.log.LogOperator;
 import com.github.byw.param.ParamContext;
 import com.github.byw.result.ResultManager;
 import com.google.common.collect.Lists;
@@ -31,19 +32,19 @@ class CalculateExecutorTest {
 		ParamContext param = factory.createParam();
 		param.addNumber("小明的数学成绩", 90);
 		param.addNumber("小明的语文成绩", 80);
-		param.addNumber("小明的数学成绩", 70);
+		param.addNumber("小明的化学成绩", 70);
 
 		FormulaManager formulaManager = factory.createFormulaManager();
-		formulaManager.add("小明的平均成绩 = (小明的数学成绩 + 小明的语文成绩 + 小明的数学成绩)/3");
+		formulaManager.add("小明的平均成绩 = (小明的数学成绩 + 小明的语文成绩 + 小明的化学成绩)/3");
 		formulaManager.add("小明平均成绩的2倍 = 小明的平均成绩 * 2");
 		ResultManager resultManager = executor.exec(param, formulaManager);
-		BigDecimal avgGrade = resultManager.getNumResult("小明的平均成绩");
-		BigDecimal avgDouble = resultManager.getNumResult("小明平均成绩的2倍");
+		BigDecimal avgGrade = resultManager.getNumResult("小明的平均成绩", 0);
+		BigDecimal avgDouble = resultManager.getNumResult("小明平均成绩的2倍", 0);
 
-		BigDecimal 小明平均成绩的2倍 = CalculateExecutor.getResultManager(param).getNumResult("小明平均成绩的2倍");
+		BigDecimal 小明平均成绩的2倍 = CalculateExecutor.getResultManager(param).getNumResult("小明平均成绩的2倍", 0);
 		assertEquals(avgDouble, 小明平均成绩的2倍);
-		assertEquals(new BigDecimal("73.3333333333"), avgGrade);
-		assertEquals(new BigDecimal("146.6666666666"), avgDouble);
+		assertEquals(BigDecimal.valueOf(80), avgGrade);
+		assertEquals(new BigDecimal("160"), avgDouble);
 
 		//多值计算
 		ParamContext param_many = factory.createParam();
@@ -263,8 +264,8 @@ class CalculateExecutorTest {
 	 */
 	@Test
 	public void register_function() {
-		CalculateConfig calculateConfig = new CalculateConfig();
-		calculateConfig.setFunctionConfig(new FunctionConfig().addFunction("testFunction", new TestFunction()));
+		CalculateConfig calculateConfig =
+				new CalculateConfig().setFunctionConfig(new FunctionConfig().addFunction("testFunction", new TestFunction()));
 
 		CalculateFactory factory = CalculateFactory.createFactory(calculateConfig);
 		CalculateExecutor executor = factory.createExecutor();
@@ -279,9 +280,7 @@ class CalculateExecutorTest {
 
 	@Test
 	public void log_operate() {
-		CalculateConfig calculateConfig = new CalculateConfig();
-		calculateConfig.setLogOperator(System.out::println);
-		CalculateFactory factory = CalculateFactory.createFactory(calculateConfig);
+		CalculateFactory factory = CalculateFactory.createFactory(new CalculateConfig().setLogOperatorClass(MyLogOperator.class));
 		CalculateExecutor executor = factory.createExecutor();
 
 		ParamContext instance = factory.createParam();
@@ -295,6 +294,73 @@ class CalculateExecutorTest {
 		});
 		BigDecimal 结果 = executor.exec(instance, formulaManager).getNumResult("结果");
 		assertEquals(BigDecimal.valueOf(4.142), 结果);
+	}
+
+	public static class MyLogOperator implements LogOperator {
+
+		@Override
+		public void operate(String log) {
+			System.out.println(log);
+		}
+	}
+
+	@Test
+	public void test_for_many_students_single() {
+		CalculateFactory factory = CalculateFactory.createFactory();
+		ParamContext param = factory.createParam();
+		FormulaManager formula = factory.createFormulaManager();
+		CalculateExecutor executor = factory.createExecutor();
+		for (StudentMessage studentMessage : createStudentMessageList()) {
+			param.addNumber("{某同学的数学成绩}", studentMessage.getName() + "的数学成绩", studentMessage.getMathScore());
+			param.addNumber("{某同学的语文成绩}", studentMessage.getName() + "的语文成绩", studentMessage.getChineseScore());
+			param.addNumber("{某同学的化学成绩}", studentMessage.getName() + "的化学成绩", studentMessage.getChemistrySore());
+
+			formula.add("{某同学的平均成绩} = ({某同学的数学成绩} + {某同学的语文成绩} + {某同学的化学成绩})/3", Lists.newArrayList(studentMessage.getName() + "的平均成绩"
+					, studentMessage.getName() + "的数学成绩", studentMessage.getName() + "的语文成绩", studentMessage.getName() + "的化学成绩"));
+		}
+		ResultManager resultManager = executor.exec(param, formula);
+		assertEquals(BigDecimal.valueOf(80), resultManager.getNumResult("小明的平均成绩", 0));
+		assertEquals(BigDecimal.valueOf(80), resultManager.getNumResult("小红的平均成绩", 0));
+		assertEquals(BigDecimal.valueOf(87), resultManager.getNumResult("小李的平均成绩", 0));
+	}
+
+	private List<StudentMessage> createStudentMessageList() {
+		return Lists.newArrayList(new StudentMessage("小明", BigDecimal.valueOf(80), BigDecimal.valueOf(80), BigDecimal.valueOf(80))
+				, new StudentMessage("小红", BigDecimal.valueOf(80), BigDecimal.valueOf(90), BigDecimal.valueOf(70))
+				, new StudentMessage("小李", BigDecimal.valueOf(100), BigDecimal.valueOf(90), BigDecimal.valueOf(70)));
+	}
+
+	private static class StudentMessage {
+		private String name;
+
+		private BigDecimal mathScore;
+
+		private BigDecimal chineseScore;
+
+		private BigDecimal chemistrySore;
+
+		public StudentMessage(String name, BigDecimal mathScore, BigDecimal chineseScore, BigDecimal chemistrySore) {
+			this.name = name;
+			this.mathScore = mathScore;
+			this.chineseScore = chineseScore;
+			this.chemistrySore = chemistrySore;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public BigDecimal getMathScore() {
+			return mathScore;
+		}
+
+		public BigDecimal getChineseScore() {
+			return chineseScore;
+		}
+
+		public BigDecimal getChemistrySore() {
+			return chemistrySore;
+		}
 	}
 
 	/**

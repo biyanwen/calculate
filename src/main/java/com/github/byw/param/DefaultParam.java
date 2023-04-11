@@ -6,6 +6,7 @@ import com.github.byw.helper.StringFormatter;
 import com.github.byw.log.LogOperator;
 import com.google.common.collect.Lists;
 import com.ql.util.express.DefaultContext;
+import lombok.SneakyThrows;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,9 +34,10 @@ public class DefaultParam implements ParamContext {
 
 	private LogOperator logOperator;
 
+	@SneakyThrows
 	@Override
 	public void setCalculateConfig(CalculateConfig config) {
-		this.logOperator = config.getLogOperator();
+		this.logOperator = (LogOperator) config.getLogOperatorClass().newInstance();
 	}
 
 	/**
@@ -184,7 +186,7 @@ public class DefaultParam implements ParamContext {
 		public Object get(Object key) {
 			Object obj = super.get(key);
 			if (obj == null) {
-				logOperator.operate("参数值为空：" + key);
+				logOperator.operate("上下文中不存在此参数：" + key);
 			}
 			return obj;
 		}

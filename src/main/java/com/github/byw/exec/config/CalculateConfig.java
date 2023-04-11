@@ -52,7 +52,7 @@ public class CalculateConfig {
 	/**
 	 * 如何处理计算过程中产生的日志
 	 */
-	private LogOperator logOperator = new PrintLogOperator();
+	private Class<?> logOperatorClass = PrintLogOperator.class;
 
 	/**
 	 * 公式管理器
@@ -88,8 +88,8 @@ public class CalculateConfig {
 		return this;
 	}
 
-	public CalculateConfig setLogOperator(LogOperator logOperator) {
-		this.logOperator = logOperator;
+	public <T extends LogOperator> CalculateConfig setLogOperatorClass(Class<T> logOperatorClass) {
+		this.logOperatorClass = logOperatorClass;
 		return this;
 	}
 

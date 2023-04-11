@@ -130,7 +130,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 	private void initResultList(List<FormulaMessage> formulaMessages, int size) {
 		formulaMessages.forEach(formulaMessage -> {
 			if (param.getParamContext().get(formulaMessage.getOriginalResultName()) == null) {
-				LOGGER.info("初始化" + formulaMessage.getOriginalResultName());
+				LOGGER.info("初始化结果参数：" + formulaMessage.getOriginalResultName());
 				param.addArray(formulaMessage.getOriginalResultName(), new ArrayList<>(Collections.nCopies(size, BigDecimal.ZERO)));
 			}
 		});

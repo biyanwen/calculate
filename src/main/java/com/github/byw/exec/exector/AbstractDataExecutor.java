@@ -3,6 +3,7 @@ package com.github.byw.exec.exector;
 import com.github.byw.exec.config.CalculateConfig;
 import com.github.byw.exec.operator.*;
 import com.github.byw.formula.Formula;
+import com.github.byw.log.LogOperator;
 import com.github.byw.param.ParamContext;
 import com.github.byw.param.ParamContext;
 import com.ql.util.express.ExpressRunner;
@@ -30,6 +31,8 @@ public abstract class AbstractDataExecutor implements Executor {
 
 	protected CalculateConfig config;
 
+	private LogOperator logOperator;
+
 	{
 		RUNNER.addFunction("listMax", new ListMax());
 		RUNNER.addFunction("listMin", new ListMin());
@@ -38,10 +41,12 @@ public abstract class AbstractDataExecutor implements Executor {
 		RUNNER.addFunction("default", new Default());
 	}
 
+	@SneakyThrows
 	@Override
 	public void exec(Formula formulaInstance, ParamContext param, CalculateConfig config) {
 		this.param = param;
 		this.config = config;
+		this.logOperator = (LogOperator) config.getLogOperatorClass().newInstance();
 		doExec(formulaInstance);
 	}
 
@@ -119,7 +124,7 @@ public abstract class AbstractDataExecutor implements Executor {
 				.append("；结束执行条件：")
 				.append(StringUtils.isBlank(stopCondition) ? "无约束" : stopCondition)
 				.toString();
-		config.getLogOperator().operate(logMessage);
+		this.logOperator.operate(logMessage);
 	}
 
 }
