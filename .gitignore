@@ -17,11 +17,6 @@ test-output/
 apidocs/
 
 commonLib/
-tsieLib/
-
 
 .flattened-pom.xml
 
-# h2数据库
-*.mv.db
-/pmpr-cnpt-web/pmpr-cnpt-web-static/src/main/resources/META-INF/resources/
