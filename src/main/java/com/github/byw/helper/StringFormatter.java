@@ -26,7 +26,7 @@ public class StringFormatter {
 	public static String format(String template, String... args) {
 		List<String> placeholderNameList = getPlaceholderNameList(template);
 		if (placeholderNameList.size() != args.length) {
-			throw new CalculateException("模板占位符和参数的数量不一致");
+			throw new CalculateException(template + " 公式有误！模板占位符和参数的数量不一致");
 		}
 		Map<String, String> paramMap = new HashMap<>();
 		for (int i = 0; i < placeholderNameList.size(); i++) {
