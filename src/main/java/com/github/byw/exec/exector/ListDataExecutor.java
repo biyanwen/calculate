@@ -102,16 +102,20 @@ public class ListDataExecutor extends AbstractDataExecutor {
 			LOGGER.warn("警告！当前公式执行索引为 " + i + " 从公式获取的参数总长度为 " + size + " 索引大于等于参数总长度，跳出循环！");
 		}
 		for (; i < size; i++) {
+			printFormulaLog("正在校验公式是否满足执行条件：" + formulaInstance.getFormulaList());
 			ConditionResultBean startConditionsResult = judgeWhetherStartOrStop(startConditionMessage, i);
 
 			ConditionResultBean stopConditionsResult = judgeWhetherStartOrStop(stopConditionMessage, i);
 			if (startConditionsResult.result) {
+				printFormulaLog("该公式满足执行条件：" + formulaInstance.getFormulaList());
 				initResultList(formulaMessages, size);
 				executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula, config);
 				while (!stopConditionsResult.result && !Thread.currentThread().isInterrupted()) {
 					executiveFormula(formulaMessages, integer, i, startConditionsResult.conditionFormula, stopConditionsResult.conditionFormula, config);
 					stopConditionsResult = judgeWhetherStartOrStop(stopConditionMessage, i);
 				}
+			} else {
+				printFormulaLog("该公式不满足执行条件：" + formulaInstance.getFormulaList());
 			}
 			// 把执行权让渡给使用者
 			if (demise) {
@@ -168,6 +172,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 		StringBuilder builder = new StringBuilder("");
 
 		Object execute = execute(formulaMessage, index, formula -> {
+			printFormulaLog("正在执行条件公式：" + formula);
 			builder.append(formula);
 			return formula;
 		});
@@ -238,18 +243,19 @@ public class ListDataExecutor extends AbstractDataExecutor {
 		execute(originalFormula, param);
 		String originalResultName = parameterOriginalNameList.get(0);
 		//执行完成之后需要将结果放入到 List 中，并保存到上下文中。
-		Object result = paramContext.get(originalResultName);
+		Boolean containsKey = paramContext.containsKey(originalResultName);
 		Object resultForIndex = paramContext.get(resultIndexName);
 		if (resultForIndex == null) {
 			throw new CalculateException("数据异常，" + resultIndexName + " 结果数据缺失");
 		}
-		if (result != null && !(result instanceof List)) {
-			throw new CalculateException("数据异常，" + originalResultName + " 类型不是 " + List.class);
-		}
 		List<Object> resultList;
-		if (result == null) {
+		if (!containsKey) {
 			resultList = new ArrayList<>();
 		} else {
+			Object result = paramContext.get(originalResultName);
+			if (!(result instanceof List)){
+				throw new CalculateException("数据异常，" + originalResultName + " 类型不是 " + List.class);
+			}
 			resultList = (List<Object>) result;
 		}
 		if (resultList.size() > index) {
@@ -394,7 +400,7 @@ public class ListDataExecutor extends AbstractDataExecutor {
 			return null;
 		}
 		if (condition) {
-			formula = "条件公式_" + Thread.currentThread().getId() + indexMark + " = " + formula + " ";
+			formula = "条件公式" + indexMark + " = " + formula + " ";
 		}
 		FormulaMessage formulaMessage = new FormulaMessage(formula);
 		checkResultName(formula);
