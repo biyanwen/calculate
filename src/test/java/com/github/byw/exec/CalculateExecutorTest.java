@@ -245,18 +245,6 @@ class CalculateExecutorTest {
 			});
 			executor.exec(param_many, formula_many);
 		});
-		// 多值计算无法获取参数长度
-		assertThrows(CalculateException.class, () -> {
-			ParamContext param_many = factory.createParam();
-			FormulaManager formula_many = factory.createFormulaManager();
-			formula_many.add("结果_index = 小明最近三年身高_index + 1", new FormulaConditions() {
-				@Override
-				public Integer retainDecimal() {
-					return 1;
-				}
-			});
-			executor.exec(param_many, formula_many);
-		});
 	}
 
 	/**

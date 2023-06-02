@@ -127,4 +127,8 @@ public abstract class AbstractDataExecutor implements Executor {
 		this.logOperator.operate(logMessage);
 	}
 
+	protected void printFormulaLog(String message){
+		this.logOperator.operate(message);
+	}
+
 }

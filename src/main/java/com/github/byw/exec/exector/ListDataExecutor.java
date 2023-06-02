@@ -93,7 +93,8 @@ public class ListDataExecutor extends AbstractDataExecutor {
 
 		List<FormulaMessage> messageList = checklist.stream().filter(t -> t != null && t.getSize() != -1).collect(Collectors.toList());
 		if (messageList.isEmpty() && paramTotalSize == null) {
-			throw new CalculateException(formulaInstance.getFormulaList() + " 公式有误！无法获取参数长度，请检查参数是否有误。也可以通过配置 " + CalculateConfig.class.getName() + "#paramTotalSize 来解决此问题");
+			printFormulaLog("该公式不执行，因为所有参数都不存在：" + formulaInstance.getFormulaList());
+			return;
 		}
 		int size = messageList.isEmpty() ? paramTotalSize : messageList.stream().findAny().get().getSize();
 		int i = Optional.ofNullable(config.getCurrentIndex()).orElse(0);
@@ -321,11 +322,6 @@ public class ListDataExecutor extends AbstractDataExecutor {
 			}
 			markSize = formulaMessage.getSize();
 			markFormula = formulaMessage.getOriginalFormula();
-		}
-
-		if (markSize == null && paramTotalSize == null) {
-			List<String> formulaList = checklist.stream().map(FormulaMessage::getOriginalFormula).collect(Collectors.toList());
-			throw new CalculateException(formulaList + " 公式有误！无法获取参数长度，请检查参数是否有误。也可以通过配置 " + CalculateConfig.class.getName() + "#paramTotalSize 来解决此问题");
 		}
 	}
 
